@@ -1,5 +1,6 @@
 import face_recognition
 import cv2
+
 '''
 这是运行人脸识别从你的网络摄像头视频演示。
 这比那要复杂一点。
@@ -12,12 +13,14 @@ OpenCV是*不*要求使用face_recognition库。如果你想运行它，只需�
 获得参考摄像头# 0（默认）
 '''
 video_capture = cv2.VideoCapture(0)
-#加载示例图片并学习如何识别它。
-people1_image = face_recognition.load_image_file("/Volumes/GSH/Python/people_faces/gsh.jpg")
-people2_image = face_recognition.load_image_file("/Volumes/GSH/Python/people_faces/wdd.jpg")
+# 加载示例图片并学习如何识别它。
+face_dir = "/Users/gdd/github/Python3/com/gsh/test/data/in/face/"
+people1_image = face_recognition.load_image_file(face_dir + "gsh.png")
+# people2_image = face_recognition.load_image_file("/Users/gdd/github/Python3/com/gsh/test/data/wdd/wdd.png")
+people2_image = face_recognition.load_image_file(face_dir + "zwj.png")
 people1_face_encoding = face_recognition.face_encodings(people1_image)[0]
 people2_face_encoding = face_recognition.face_encodings(people2_image)[0]
-na=0
+na = 0
 # 初始化一些变量
 face_locations = []
 face_encodings = []
@@ -36,21 +39,21 @@ while True:
         # 在目前的视频帧中找到所有的脸和面部编码
         face_locations = face_recognition.face_locations(small_frame)
         face_encodings = face_recognition.face_encodings(small_frame, face_locations)
-        
+
         face_names = []
         for face_encoding in face_encodings:
-            name="unknow"
+            name = "unknow"
             # 看看面部是否与已知人脸相匹配。
-            if face_recognition.compare_faces([people1_face_encoding], face_encoding)[0]:
-                name="GSH"
-            if face_recognition.compare_faces([people2_face_encoding], face_encoding)[0]:
-                name="WDD"
+            if face_recognition.compare_faces([people1_face_encoding], face_encoding, tolerance=0.34)[0]:
+                name = "管生辉"
+            if face_recognition.compare_faces([people2_face_encoding], face_encoding, tolerance=0.34)[0]:
+                name = "ZWJ"
             face_names.append(name)
     process_this_frame = not process_this_frame
     # 显示结果
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # 缩放面部位置，因为我们检测到的帧被缩放到1/4大小。
-        top *= 4    
+        top *= 4
         right *= 4
         bottom *= 4
         left *= 4
@@ -61,7 +64,7 @@ while True:
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-    #显示结果图像
+    # 显示结果图像
     cv2.imshow('Video', frame)
 
     # 在键盘上点击“Q”退出！
