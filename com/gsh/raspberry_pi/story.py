@@ -216,6 +216,7 @@ if __name__ == '__main__':
     while(1):
         try:
             result = baiduAi.audio_to_text()
+            print(result)
         except (Exception,TypeError):
             result = baiduAi.audio_to_text()
             print(result)

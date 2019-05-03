@@ -72,10 +72,15 @@ def voice_broadcast(mp3_file_path):
 # 音频保存wav文件
 def voice_to_audio():
     # 定义数据流块
-    CHUNK = 1024
-    FORMAT = pyaudio.paInt16
+    # CHUNK = 1024
+    # CHANNELS = 1
+    # RATE = 44100
+    # 树莓派CHUNK=800，RATE=8000，CHANNELS=1
+    CHUNK = 800
+    RATE = 8000
     CHANNELS = 1
-    RATE = 44100
+    # 树莓派CHUNK为800，RATE为8000
+    FORMAT = pyaudio.paInt16
     # 录音时间
     RECORD_SECONDS = 2
     # 创建PyAudio对象
@@ -117,7 +122,8 @@ def voice_to_audio():
 # wav文件装pcm
 def wav_to_pcm():
     wav_file = OUTPUT_WAV
-    BASE_PRO_PATH = "~/github/Python3/com/gsh/raspberry_pi/audio/"
+    BASE_PRO_PATH = os.getcwd()+"/audio/"
+    print(BASE_PRO_PATH)
     # 假设 wav_file = "音频文件.wav"
     # wav_file.split(".") 得到["音频文件","wav"] 拿出第一个结果"音频文件"  与 ".pcm" 拼接 等到结果 "音频文件.pcm"
     pcm_file = "%s.pcm" % (wav_file.split(".")[0])
