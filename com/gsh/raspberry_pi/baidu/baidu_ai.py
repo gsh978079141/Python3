@@ -26,7 +26,7 @@ def audio_to_text():
         file_context = fp.read()
 
     # 识别本地文件
-    res = client.asr(file_context, 'pcm', 16000, {
+    res = client.asr(file_context, 'pcm', 8000, {
         'dev_pid': 1536,
     })
 
