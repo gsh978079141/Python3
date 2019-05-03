@@ -26,6 +26,8 @@ def audio_to_text():
         file_context = fp.read()
 
     # 识别本地文件
+    # res = client.asr(file_context, 'pcm', 16000, {
+    # 树莓派8000
     res = client.asr(file_context, 'pcm', 8000, {
         'dev_pid': 1536,
     })
@@ -75,11 +77,14 @@ def voice_to_audio():
     # CHUNK = 1024
     # CHANNELS = 1
     # RATE = 44100
-    # 树莓派CHUNK=800，RATE=8000，CHANNELS=1
-    CHUNK = 800
-    RATE = 8000
-    CHANNELS = 1
-    # 树莓派CHUNK为800，RATE为8000
+    # 树莓派
+    CHUNK=800
+    RATE=8000
+    CHANNELS=1
+    # 树莓派
+    # CHUNK = 1024
+    # RATE = 16000
+    # CHANNELS = 2
     FORMAT = pyaudio.paInt16
     # 录音时间
     RECORD_SECONDS = 2
@@ -128,5 +133,7 @@ def wav_to_pcm():
     # wav_file.split(".") 得到["音频文件","wav"] 拿出第一个结果"音频文件"  与 ".pcm" 拼接 等到结果 "音频文件.pcm"
     pcm_file = "%s.pcm" % (wav_file.split(".")[0])
     # 就是此前我们在cmd窗口中输入命令,这里面就是在让Python帮我们在cmd中执行命令
-    os.system("ffmpeg -y  -i %s  -acodec pcm_s16le -f s16le -ac 1 -ar 16000 %s" % (BASE_PRO_PATH+wav_file, BASE_PRO_PATH+pcm_file))
+    # os.system("ffmpeg -y  -i %s  -acodec pcm_s16le -f s16le -ac 1 -ar 16000 %s" % (BASE_PRO_PATH+wav_file, BASE_PRO_PATH+pcm_file))
+    # 树莓派 ar 8000
+    os.system("ffmpeg -y  -i %s  -acodec pcm_s16le -f s16le -ac 1 -ar 8000 %s" % (BASE_PRO_PATH+wav_file, BASE_PRO_PATH+pcm_file))
     return BASE_PATH+pcm_file
