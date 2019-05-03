@@ -74,7 +74,7 @@ def voice_to_audio():
     # 定义数据流块
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
-    CHANNELS = 2
+    CHANNELS = 1
     RATE = 44100
     # 录音时间
     RECORD_SECONDS = 2
