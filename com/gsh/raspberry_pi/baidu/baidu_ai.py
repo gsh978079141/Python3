@@ -80,7 +80,7 @@ def voice_to_audio():
     # 树莓派
     CHUNK=800
     RATE=8000
-    CHANNELS=1
+    CHANNELS=2
     # 树莓派
     # CHUNK = 1024
     # RATE = 16000
