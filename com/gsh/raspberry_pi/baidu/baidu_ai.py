@@ -1,5 +1,7 @@
 # baidu_ai.py 文件内容
 from aip import AipSpeech
+from aip import AipNlp
+
 import pygame
 import pyaudio
 import wave
@@ -10,11 +12,12 @@ BASE_PATH = "./audio/"
 # 录音文件名
 OUTPUT_WAV = "output.wav"
 # 这里的三个参数,对应在百度语音创建的应用中的三个参数
-APP_ID = "15823516"
-API_KEY = "MpIxVxN43QTPmcrRM0bxnO5Z"
-SECRET_KEY = "3McX8d975fMftR89w79pIgTHDV4B1fiS"
+APP_ID = "16160723"
+API_KEY = "L52PfGvo0NFpNf6b0zD0o7fO"
+SECRET_KEY = "ybp1mVtCRVXmaRXbhtFUT0CmOMu87GGV"
 
-client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
+speech_client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
+nlp_client = AipNlp(APP_ID, API_KEY, SECRET_KEY)
 
 
 # 语音识别
@@ -28,7 +31,7 @@ def audio_to_text():
     # 识别本地文件
     # res = client.asr(file_context, 'pcm', 16000, {
     # 树莓派8000
-    res = client.asr(file_context, 'pcm', 8000, {
+    res = speech_client.asr(file_context, 'pcm', 16000, {
         'dev_pid': 1536,
     })
 
@@ -43,7 +46,7 @@ def audio_to_text():
 # 语音合成
 def text_to_audio(res_str, mp3_file_name):
     synth_file = mp3_file_name
-    synth_context = client.synthesis(res_str, "zh", 1, {
+    synth_context = speech_client.synthesis(res_str, "zh", 1, {
         "vol": 5,
         "spd": 4,
         "pit": 9,
@@ -78,9 +81,9 @@ def voice_to_audio():
     # CHANNELS = 1
     # RATE = 44100
     # 树莓派
-    CHUNK=800
-    RATE=8000
-    CHANNELS=2
+    CHUNK = 800
+    RATE = 8000
+    CHANNELS = 2
     # 树莓派
     # CHUNK = 1024
     # RATE = 16000
@@ -127,7 +130,7 @@ def voice_to_audio():
 # wav文件装pcm
 def wav_to_pcm():
     wav_file = OUTPUT_WAV
-    BASE_PRO_PATH = os.getcwd()+"/audio/"
+    BASE_PRO_PATH = os.getcwd() + "/audio/"
     print(BASE_PRO_PATH)
     # 假设 wav_file = "音频文件.wav"
     # wav_file.split(".") 得到["音频文件","wav"] 拿出第一个结果"音频文件"  与 ".pcm" 拼接 等到结果 "音频文件.pcm"
@@ -135,5 +138,11 @@ def wav_to_pcm():
     # 就是此前我们在cmd窗口中输入命令,这里面就是在让Python帮我们在cmd中执行命令
     # os.system("ffmpeg -y  -i %s  -acodec pcm_s16le -f s16le -ac 1 -ar 16000 %s" % (BASE_PRO_PATH+wav_file, BASE_PRO_PATH+pcm_file))
     # 树莓派 ar 8000
-    os.system("ffmpeg -y  -i %s  -acodec pcm_s16le -f s16le -ac 1 -ar 8000 %s" % (BASE_PRO_PATH+wav_file, BASE_PRO_PATH+pcm_file))
-    return BASE_PATH+pcm_file
+    os.system("ffmpeg -y  -i %s  -acodec pcm_s16le -f s16le -ac 1 -ar 16000 %s" % (
+    BASE_PRO_PATH + wav_file, BASE_PRO_PATH + pcm_file))
+    return BASE_PATH + pcm_file
+
+
+# 词法分析
+def word_lexer(text):
+    return nlp_client.lexer(text)

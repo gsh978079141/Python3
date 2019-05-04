@@ -216,8 +216,12 @@ if __name__ == '__main__':
     while(1):
         try:
             result = baiduAi.audio_to_text()
-            print(result)
+            print(baiduAi.word_lexer(result))
+            if "故事" in result:
+                delivery(1)
+            elif "天气" in result:
+                delivery(2)
         except (Exception,TypeError):
             result = baiduAi.audio_to_text()
-            print(result)
+            print(baiduAi.word_lexer(result))
 # print('thread %s ended.' % threading.current_thread().name)
