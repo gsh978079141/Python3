@@ -17,8 +17,8 @@ GPIO.setup(INT4, GPIO.OUT)
 # 初始化
 GPIO.setup(ENA, GPIO.OUT)
 # 200HZ
-p1 = GPIO.PWM(ENA, 200)
-p1.start(100)  # 产生占空比为0.4的PWM信号，取值范围0-100
+p1 = GPIO.PWM(ENA, 100)
+p1.start(50)  # 产生占空比为0.4的PWM信号，取值范围0-100
 
 
 #########定义电机正转函数##########
@@ -27,6 +27,8 @@ def gogo():
     GPIO.output(ENA, GPIO.HIGH)
     GPIO.output(INT1, GPIO.LOW)
     GPIO.output(INT2, GPIO.HIGH)
+    GPIO.output(INT3, GPIO.LOW)
+    GPIO.output(INT4, GPIO.HIGH)
 
 
 #########定义电机反转函数##########
@@ -35,6 +37,9 @@ def back():
     GPIO.output(ENA, GPIO.HIGH)
     GPIO.output(INT1, GPIO.HIGH)
     GPIO.output(INT2, GPIO.LOW)
+    GPIO.output(INT3, GPIO.HIGH)
+    GPIO.output(INT4, GPIO.LOW)
+
 
 
 #########定义电机停止函数##########
