@@ -4,7 +4,6 @@ import time
 GPIO.setmode(GPIO.BOARD)
 
 ENA = 16
-ENB = 18
 INT1 = 11
 INT2 = 12
 INT3 = 13
@@ -44,7 +43,6 @@ def stop():
     print('停止转动')
     GPIO.output(ENA,GPIO.LOW)
     p1.stop  # 停止PWM信号
-    GPIO.output(ENB, GPIO.LOW)
     GPIO.output(INT1, GPIO.LOW)
     GPIO.output(INT2, GPIO.LOW)
     GPIO.output(INT3, GPIO.LOW)
