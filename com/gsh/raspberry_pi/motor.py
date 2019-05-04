@@ -18,7 +18,7 @@ GPIO.setup(INT4, GPIO.OUT)
 GPIO.setup(ENA, GPIO.OUT)
 # 200HZ
 p1 = GPIO.PWM(ENA, 200)
-p1.start(40)  # 产生占空比为0.4的PWM信号，取值范围0-100
+p1.start(100)  # 产生占空比为0.4的PWM信号，取值范围0-100
 
 
 #########定义电机正转函数##########
