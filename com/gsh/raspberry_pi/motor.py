@@ -33,8 +33,8 @@ def gogo():
 def back():
     print('反转')
     GPIO.output(ENA, GPIO.HIGH)
-    GPIO.output(INT1, GPIO.LOW)
-    GPIO.output(INT2, GPIO.HIGH)
+    GPIO.output(INT1, GPIO.HIGH)
+    GPIO.output(INT2, GPIO.LOW)
 
 
 #########定义电机停止函数##########
@@ -50,16 +50,16 @@ def stop():
 
 '''
 整个实验是
-正转10.5s
-反转10.5s
+正转5s
+反转5s
 '''
 while True:
     gogo()
-    time.sleep(3)
+    time.sleep(5)
     stop()
     time.sleep(3)
     back()
-    time.sleep(3)
+    time.sleep(5)
     action = input('是否继续？Y/N')
     if action == 'n':
         GPIO.cleanup()
