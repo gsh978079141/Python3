@@ -3,10 +3,10 @@ import urllib.parse
 import urllib.request
 import gzip
 import json
-from aip import AipSpeech
 import matplotlib.pyplot as plt
 import re
-import baidu.baidu_ai as baiduAi
+import baidu_ai
+
 # 设置参数，图片显示中文字符，否则乱码
 plt.rcParams['font.sans-serif'] = ['SimHei']
 BASE_PATH = "./"
@@ -77,7 +77,7 @@ def Voice_broadcast(weather_forcast_txt):
     weather_forecast_txt = weather_forcast_txt
     print('语音提醒：', weather_forecast_txt)
     # 百度语音合成
-    baiduAi.text_to_audio(weather_forecast_txt,BROADCAST_MP3)
+    baidu_ai.text_to_audio(weather_forecast_txt, BROADCAST_MP3)
     # result = client.synthesis(weather_forecast_txt, 'zh', 1, {'vol': 5,'per': 3,'spd':4})
     # if not isinstance(result, dict):
     #     with open(BROADCAST_MP3, 'wb') as f:
@@ -99,7 +99,7 @@ def Voice_broadcast(weather_forcast_txt):
     #     # 未来四天天气变化图
     # E 其他播报
     # 百度播报
-    baiduAi.voice_broadcast(BROADCAST_MP3)
+    baidu_ai.voice_broadcast(BROADCAST_MP3)
 
 
 # 画图

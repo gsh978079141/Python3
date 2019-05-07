@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 import smtplib
 from email.mime.text import MIMEText
 import random
-import baidu.baidu_ai as baiduAi
-import utils.Weather as weatherApi
-import time, threading
+import weather
+import baidu_ai
+import threading
 
 # 标题
 title = ""
@@ -138,9 +138,9 @@ def main_story():
     content = getStory(random.choice(urllist), headers)
     print(title + '\n' + content)
     # 百度 文字合成语音
-    baiduAi.text_to_audio(content, BROADCAST_MP3)
+    baidu_ai.text_to_audio(content, BROADCAST_MP3)
     # 百度 播放语音
-    baiduAi.voice_broadcast(BROADCAST_MP3)
+    baidu_ai.voice_broadcast(BROADCAST_MP3)
 
 
 # 修改后主函数
@@ -176,9 +176,9 @@ def test_main_story():
     # 百度语音合成后的MP3文件
     broadcast_mp3 = "story.mp3"
     # 百度 文字合成语音
-    baiduAi.text_to_audio("故事名：" + title + content, broadcast_mp3)
+    baidu_ai.text_to_audio("故事名：" + title + content, broadcast_mp3)
     # 百度 播放语音
-    baiduAi.voice_broadcast(broadcast_mp3)
+    baidu_ai.voice_broadcast(broadcast_mp3)
 
 
 # 原main函数
@@ -188,7 +188,7 @@ def test_main_story():
 #     storyList = ["童话故事",""]
 #     weather = "天气"
 #     while(1):
-#         result = baiduAi.audio_to_text()
+#         result = baidu_ai.audio_to_text()
 #         if story in result:
 #             get_story()
 #         elif weather in result:
@@ -196,32 +196,32 @@ def test_main_story():
 
 # 分支转换
 def delivery(result):
-    switch = {1: test_main_story, 2: weatherApi.start}
+    switch = {1: test_main_story, 2: weather.start}
     t = threading.Thread(target=switch[result], name=switch[result])
     t.setDaemon(True)
     t.start()
 
 
-if __name__ == '__main__':
+def main():
     story = ["故事", "固始", "孤石", "故世"]
     weather = ["天气", "天启", "田七", "天琪", "预报", "天气预报"]
     # main_story()
     # 语音识别结果
     # while (1):
     #     try:
-    #         result = baiduAi.audio_to_text()
+    #         result = baidu_ai.audio_to_text()
     #         delivery(result)
     #     except (Exception, AttributeError, TypeError):
     #         test_main_story()
-    while(1):
+    while (1):
         try:
-            result = baiduAi.audio_to_text()
-            print(baiduAi.word_lexer(result))
+            result = baidu_ai.audio_to_text()
+            print(baidu_ai.word_lexer(result))
             if "故事" in result:
                 delivery(1)
             elif "天气" in result:
                 delivery(2)
-        except (Exception,TypeError):
-            result = baiduAi.audio_to_text()
-            print(baiduAi.word_lexer(result))
-# print('thread %s ended.' % threading.current_thread().name)
+        except (Exception, TypeError):
+            result = baidu_ai.audio_to_text()
+            print(baidu_ai.word_lexer(result))
+# print('thread %s ended.' % threading.current_thread().name)if __name__ == '__main__':
