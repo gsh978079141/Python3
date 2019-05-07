@@ -1,6 +1,6 @@
 import face_recognition
 import cv2
-
+import os
 '''
 这是运行人脸识别从你的网络摄像头视频演示。
 这比那要复杂一点。
@@ -14,7 +14,7 @@ OpenCV是*不*要求使用face_recognition库。如果你想运行它，只需�
 '''
 video_capture = cv2.VideoCapture(0)
 # 加载示例图片并学习如何识别它。
-face_dir = "/Users/gdd/github/Python3/com/gsh/test/data/in/face/"
+face_dir = os.getcwd()+"in/face/"
 people1_image = face_recognition.load_image_file(face_dir + "gsh.png")
 # people2_image = face_recognition.load_image_file("/Users/gdd/github/Python3/com/gsh/test/data/wdd/wdd.png")
 people2_image = face_recognition.load_image_file(face_dir + "zwj.png")
