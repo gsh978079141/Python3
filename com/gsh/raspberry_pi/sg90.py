@@ -25,7 +25,7 @@ time.sleep(2)
 #         p.ChangeDutyCycle(0)
 #         time.sleep(0.2)
 p.ChangeDutyCycle(2.5 + 10 * 1 / 180)  # 设置转动角度
-time.sleep(0.02)  # 等该20ms周期结束
-p.ChangeDutyCycle(0)  # 归零信号
-time.sleep(0.2)
+# time.sleep(0.02)  # 等该20ms周期结束
+# p.ChangeDutyCycle(0)  # 归零信号
+# time.sleep(0.2)
 
