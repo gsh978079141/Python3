@@ -225,3 +225,5 @@ def main():
             result = baidu_ai.audio_to_text()
             print(baidu_ai.word_lexer(result))
 # print('thread %s ended.' % threading.current_thread().name)if __name__ == '__main__':
+if __name__ == '__main__':
+    main()
