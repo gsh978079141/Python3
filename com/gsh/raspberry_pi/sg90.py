@@ -5,7 +5,7 @@ import atexit
 
 atexit.register(GPIO.cleanup)
 
-servopin = 21
+servopin = 7
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servopin, GPIO.OUT, initial=False)
 p = GPIO.PWM(servopin, 50)  # 50HZ
