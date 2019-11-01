@@ -1,7 +1,7 @@
 import json
 from flask import Flask, Response
-import story
-
+# import story
+import motor
 app = Flask(__name__)
 
 
@@ -15,10 +15,9 @@ def health():
 @app.route("/tellStory")
 def tellStory():
     result = {'username': 'gsh', 'password': 'gsh'}
-    story.main()
+    motor.gogo()
+    # story.main()
     return Response(json.dumps(result), mimetype='application/json')
-
-
 
 
 
