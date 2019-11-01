@@ -29,6 +29,9 @@ def gogo():
     GPIO.output(INT2, GPIO.HIGH)
     GPIO.output(INT3, GPIO.LOW)
     GPIO.output(INT4, GPIO.HIGH)
+    time.sleep(5)
+    stop()
+
 
 
 #########定义电机反转函数##########
@@ -39,6 +42,9 @@ def back():
     GPIO.output(INT2, GPIO.LOW)
     GPIO.output(INT3, GPIO.HIGH)
     GPIO.output(INT4, GPIO.LOW)
+    time.sleep(5)
+    stop()
+
 
 
 

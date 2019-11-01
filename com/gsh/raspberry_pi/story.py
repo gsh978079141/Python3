@@ -12,7 +12,7 @@ import random
 import weather
 import baidu_ai
 import threading
-
+# import motor
 # 标题
 title = ""
 # 内容
@@ -195,6 +195,11 @@ def test_main_story():
 #             weatherApi.start()
 
 # 分支转换
+# def delivery(result):
+#     switch = {1: test_main_story, 2: weather.start, 3:motor.gogo, 4:motor.back}
+#     t = threading.Thread(target=switch[result], name=switch[result])
+#     t.setDaemon(True)
+#     t.start()
 def delivery(result):
     switch = {1: test_main_story, 2: weather.start}
     t = threading.Thread(target=switch[result], name=switch[result])
@@ -221,9 +226,15 @@ def main():
                 delivery(1)
             elif "天气" in result:
                 delivery(2)
+            elif "正转" in result:
+                delivery(3)
+            elif "反转" in result:
+                delivery(4)
         except (Exception, TypeError):
             result = baidu_ai.audio_to_text()
             print(baidu_ai.word_lexer(result))
+
+
 # print('thread %s ended.' % threading.current_thread().name)if __name__ == '__main__':
 if __name__ == '__main__':
     main()
