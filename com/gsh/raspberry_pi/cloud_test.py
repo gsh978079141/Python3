@@ -16,11 +16,23 @@ def health():
 def tellStory():
     result = {'username': 'gsh', 'password': 'gsh'}
     motor.gogo()
-    #####
     # story.main()
     return Response(json.dumps(result), mimetype='application/json')
 
 
+# 讲故事
+@app.route("/go")
+def gogo():
+    motor.gogo()
+
+@app.route("/stop")
+def stop():
+    motor.stop()
+@app.route("/back")
+def back():
+    motor.back()
+
+
 
 # 启动app
-app.run(port=3000, host='0.0.0.0')
+app.run(port=8081, host='0.0.0.0')

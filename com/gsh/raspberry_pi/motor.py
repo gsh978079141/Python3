@@ -64,15 +64,15 @@ def stop():
 正转5s
 反转5s
 '''
-while True:
-    gogo()
-    time.sleep(5)
-    stop()
-    time.sleep(3)
-    back()
-    time.sleep(5)
-    action = input('是否继续？Y/N')
-    if action == 'n':
-        GPIO.cleanup()
-        exit()
+# while True:
+#     gogo()
+#     time.sleep(5)
+#     stop()
+#     time.sleep(3)
+#     back()
+#     time.sleep(5)
+#     action = input('是否继续？Y/N')
+#     if action == 'n':
+#         GPIO.cleanup()
+#         exit()
 
