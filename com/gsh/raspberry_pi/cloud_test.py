@@ -16,6 +16,7 @@ def health():
 def tellStory():
     result = {'username': 'gsh', 'password': 'gsh'}
     motor.gogo()
+    #####
     # story.main()
     return Response(json.dumps(result), mimetype='application/json')
 
