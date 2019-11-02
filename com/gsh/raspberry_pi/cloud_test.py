@@ -23,14 +23,22 @@ def tellStory():
 # 讲故事
 @app.route("/go")
 def gogo():
-    motor.gogo()
+    motor.gogo() 
+    result = {'status': 'go'}
+    return Response(json.dumps(result), mimetype='application/json')
+
 
 @app.route("/stop")
 def stop():
     motor.stop()
+    result = {'status': 'stop'}
+    return Response(json.dumps(result), mimetype='application/json')
+
 @app.route("/back")
 def back():
     motor.back()
+    result = {'status': 'back'}
+    return Response(json.dumps(result), mimetype='application/json')
 
 
 
