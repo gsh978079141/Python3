@@ -22,7 +22,8 @@ def tellStory():
 # 讲故事
 @app.route("/go")
 def gogo():
-    sleepTime = float(request.form.get("time"))
+    data = json.loads(request.data)
+    sleepTime = data['time']
     motor.gogo(sleepTime)
     result = {'status': 'go'}
     return Response(json.dumps(result), mimetype='application/json')
@@ -36,7 +37,8 @@ def stop():
 
 @app.route("/back")
 def back():
-    sleepTime = float(request.form.get("time"))
+    data = json.loads(request.data)
+    sleepTime = data['time']
     motor.back(sleepTime)
     result = {'status': 'back'}
     return Response(json.dumps(result), mimetype='application/json')
