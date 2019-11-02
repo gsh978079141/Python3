@@ -38,7 +38,7 @@ def gogo(sleepTime):
 def back(sleepTime):
     init()
     print('反转')
-    GPIO.output(ENA, GPIO.HIGH)
+    GPIO.output(ENA, GPIO.LOW)
     GPIO.output(INT1, GPIO.HIGH)
     GPIO.output(INT2, GPIO.LOW)
     GPIO.output(INT3, GPIO.HIGH)
