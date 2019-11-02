@@ -1,5 +1,5 @@
 import json
-from flask import Flask, Response
+from flask import Flask, Response,request
 # import story
 import motor
 app = Flask(__name__)
@@ -23,7 +23,8 @@ def tellStory():
 # 讲故事
 @app.route("/go")
 def gogo():
-    motor.gogo() 
+    time = request.form.get("time")
+    motor.gogo(time)
     result = {'status': 'go'}
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -36,7 +37,8 @@ def stop():
 
 @app.route("/back")
 def back():
-    motor.back()
+    time = request.form.get("time")
+    motor.back(time)
     result = {'status': 'back'}
     return Response(json.dumps(result), mimetype='application/json')
 
