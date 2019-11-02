@@ -20,7 +20,7 @@ def tellStory():
 
 
 # 讲故事
-@app.route("/go")
+@app.route("/go",methods=["GET", "POST"])
 def gogo():
     data = json.loads(request.data)
     sleepTime = data['time']
@@ -29,13 +29,13 @@ def gogo():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/stop")
+@app.route("/stop",methods=["GET", "POST"])
 def stop():
     motor.stop()
     result = {'status': 'stop'}
     return Response(json.dumps(result), mimetype='application/json')
 
-@app.route("/back")
+@app.route("/back",methods=["GET", "POST"])
 def back():
     data = json.loads(request.data)
     sleepTime = data['time']
