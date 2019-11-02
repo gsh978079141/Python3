@@ -23,6 +23,7 @@ def init():
 
 #########定义电机正转函数##########
 def gogo():
+    init()
     print('正转')
     GPIO.output(ENA, GPIO.HIGH)
     GPIO.output(INT1, GPIO.LOW)
@@ -35,6 +36,7 @@ def gogo():
 
 #########定义电机反转函数##########
 def back():
+    init()
     print('反转')
     GPIO.output(ENA, GPIO.HIGH)
     GPIO.output(INT1, GPIO.HIGH)
