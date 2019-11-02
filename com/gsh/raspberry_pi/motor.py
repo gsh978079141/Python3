@@ -57,7 +57,7 @@ def stop():
     GPIO.output(INT2, GPIO.LOW)
     GPIO.output(INT3, GPIO.LOW)
     GPIO.output(INT4, GPIO.LOW)
-
+    GPIO.cleanup()
 
 '''
 整个实验是
