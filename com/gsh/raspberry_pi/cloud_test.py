@@ -15,7 +15,6 @@ def health():
 @app.route("/tellStory")
 def tellStory():
     result = {'username': 'gsh', 'password': 'gsh'}
-    motor.gogo()
     # story.main()
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -23,8 +22,8 @@ def tellStory():
 # 讲故事
 @app.route("/go")
 def gogo():
-    time = request.form.get("time")
-    motor.gogo(time)
+    sleepTime = float(request.form.get("time"))
+    motor.gogo(sleepTime)
     result = {'status': 'go'}
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -37,11 +36,10 @@ def stop():
 
 @app.route("/back")
 def back():
-    time = request.form.get("time")
-    motor.back(time)
+    sleepTime = float(request.form.get("time"))
+    motor.back(sleepTime)
     result = {'status': 'back'}
     return Response(json.dumps(result), mimetype='application/json')
-
 
 
 # 启动app

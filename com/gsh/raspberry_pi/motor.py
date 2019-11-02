@@ -22,7 +22,7 @@ def init():
     p1.start(50)  # 产生占空比为0.4的PWM信号，取值范围0-100
 
 #########定义电机正转函数##########
-def gogo(time):
+def gogo(sleepTime):
     init()
     print('正转')
     GPIO.output(ENA, GPIO.HIGH)
@@ -30,12 +30,12 @@ def gogo(time):
     GPIO.output(INT2, GPIO.HIGH)
     GPIO.output(INT3, GPIO.LOW)
     GPIO.output(INT4, GPIO.HIGH)
-    time.sleep(time)
+    time.sleep(sleepTime)
     stop()
 
 
 #########定义电机反转函数##########
-def back(time):
+def back(sleepTime):
     init()
     print('反转')
     GPIO.output(ENA, GPIO.HIGH)
@@ -43,7 +43,7 @@ def back(time):
     GPIO.output(INT2, GPIO.LOW)
     GPIO.output(INT3, GPIO.HIGH)
     GPIO.output(INT4, GPIO.LOW)
-    time.sleep(time)
+    time.sleep(sleepTime)
     stop()
 
 
