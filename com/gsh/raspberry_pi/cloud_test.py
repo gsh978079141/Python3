@@ -24,7 +24,7 @@ def tellStory():
 def gogo():
     data = json.loads(request.data)
     sleepTime = data['time']
-    motor.gogo(sleepTime)
+    motor.go(sleepTime)
     result = {'status': 'go'}
     return Response(json.dumps(result), mimetype='application/json')
 

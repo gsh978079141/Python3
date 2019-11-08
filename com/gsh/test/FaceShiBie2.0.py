@@ -24,7 +24,7 @@ filenames = os.listdir(face_dir)
 for filename in filenames:
     people_image = face_recognition.load_image_file(face_dir + filename)
     people_face_encoding = face_recognition.face_encodings(people_image)[0]
-    people_name = os.path.splitext(filename)[0];
+    people_name = os.path.splitext(filename)[0]
     people_data = {"name": people_name, "people_face_encoding": people_face_encoding}
     people_datas.append(people_data)
 #  ！！！！！！！修改！！！！！！ #
@@ -35,7 +35,7 @@ face_encodings = []
 face_names = []
 process_this_frame = True
 
-video_capture = cv2.VideoCapture(1)
+video_capture = cv2.VideoCapture(0)
 while True:
     # 抓取单帧视频
     ret, frame = video_capture.read()
@@ -55,7 +55,7 @@ while True:
             # 看看面部是否与已知人脸相匹配。
             for people_data in people_datas:
                 if face_recognition.compare_faces([people_data.get("people_face_encoding")], face_encoding,
-                                                  tolerance=0.4)[0]:
+                                                  tolerance=0.5)[0]:
                     name = people_data.get("name")
                     print(name)
             #  ！！！！！！！修改！！！！！！ #
