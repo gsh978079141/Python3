@@ -21,7 +21,7 @@ class MyFaceClass:
     def face_shibie(frame):
         # store the accumulated weight factor
         # 加载示例图片并学习如何识别它。
-        face_dir = "/Users/gdd/github/Python3/com/gsh/test/data/in/face/"
+        face_dir = "D:\WorkSpaces\Pycharm_WorkSpace\Python3\com\gsh\test\data\in\face"
         #  ！！！！！！！修改！！！！！！ #
         people_datas = []
         people_face_encoding = []

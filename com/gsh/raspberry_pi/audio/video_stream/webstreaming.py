@@ -13,7 +13,6 @@ outputFrame = None
 lock = threading.Lock()
 
 app = Flask(__name__)
-
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 

@@ -14,7 +14,9 @@ OpenCV是*不*要求使用face_recognition库。如果你想运行它，只需�
 获得参考摄像头# 0（默认）
 '''
 # 加载示例图片并学习如何识别它。
-face_dir = "/Users/gdd/github/Python3/com/gsh/test/data/in/face/"
+# face_dir = "/Users/gdd/github/Python3/com/gsh/test/data/in/face/"
+face_dir = "./data/in/face/"
+
 #  ！！！！！！！修改！！！！！！ #
 people_datas = []
 people_face_encoding = []
