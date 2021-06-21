@@ -1,58 +1,44 @@
 # import the necessary packages
-import argparse
-import datetime
+from com.gsh.tmp.singlemotiondetector_bak import SingleMotionDetector as smd
+from imutils.video import VideoStream
+from flask import Response
+from flask import Flask
+import face_recognition
 import os
 import threading
-import time
-import wave
-import cv2
-import face_recognition
+import argparse
+import datetime
 import imutils
+import time
+import cv2
+from PIL import ImageGrab
 import numpy as np
 import pyaudio
-from PIL import ImageGrab
-from flask import Flask
-from flask import Response
-from imutils.video import VideoStream
-from com.gsh.tmp.singlemotiondetector_bak import SingleMotionDetector as smd
-
-# 行为和帧对应关系
-actOutputFrame = {'zhi_bo': None, 'lu_pin': None, 'detect_motion': None, 'face_shibie': None}
-# 输出帧
+import wave
 outputFrame = None
-# 输入流
-vs = VideoStream(src=0).start()
-# 实时帧
-nowFrame = None
 lock = threading.Lock()
 app = Flask(__name__)
+# vs = VideoStream(src=0).start()
+vs = None
 time.sleep(2.0)
-# S 语音相关配置
-# 定义数据流块
-CHUNK = 256
-# 量化位数（音量级划分）
-FORMAT = pyaudio.paInt16
-# 声道数;声道数：可以是单声道或者是双声道
-CHANNELS = 1
-# 采样率;采样率：一秒内对声音信号的采集次数，常用的有8kHz, 16kHz, 32kHz, 48kHz, 11.025kHz, 22.05kHz, 44.1kHz
-RATE = 8000
-# 录音秒数
-RECORD_SECONDS = 10
-# 两个字节十六位
-SAMP_WIDTH = 2
-# E 语音相关配置
+CHUNK = 256  # 定义数据流块
+FORMAT = pyaudio.paInt16  # 量化位数（音量级划分）
+CHANNELS = 1  # 声道数;声道数：可以是单声道或者是双声道
+RATE = 8000  # 采样率;采样率：一秒内对声音信号的采集次数，常用的有8kHz, 16kHz, 32kHz, 48kHz, 11.025kHz, 22.05kHz, 44.1kHz
+RECORD_SECONDS = 10  # 录音秒数
+sampwidth=2 #两个字节十六位
 
 
 # 动作识别
 def detect_motion(frameCount):
-    global vs, actOutputFrame, lock
+    global vs, outputFrame, lock
     md = smd(accumWeight=0.1)
     total = 0
     # loop over frames from the video stream
     while True:
         # read the next frame from the video stream, resize it,
         # convert the frame to grayscale, and blur it
-        frame = nowFrame
+        frame = vs.read()
         frame = imutils.resize(frame, width=400)
         # face.face_shibie(frame)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -87,13 +73,16 @@ def detect_motion(frameCount):
         # acquire the lock, set the output frame, and release the
         # lock
         with lock:
-            actOutputFrame['detect_motion'] = frame.copy()
+            outputFrame = frame.copy()
+
+
 
 
 # 人脸识别
 def face_shibie(frameCount):
-    global vs, actOutputFrame, lock
+    global vs, outputFrame, lock
     md = smd(accumWeight=0.1)
+
     total = 0
     # store the accumulated weight factor
     # 加载示例图片并学习如何识别它。
@@ -118,8 +107,7 @@ def face_shibie(frameCount):
     face_names = []
     process_this_frame = True
     while True:
-        # frame = vs.read()
-        frame = nowFrame
+        frame = vs.read()
         # 将视频帧大小调整为1/4大小，以便更快地进行人脸识别处理。
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
@@ -189,7 +177,7 @@ def face_shibie(frameCount):
             # #######中文字体#########
             cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
         with lock:
-            actOutputFrame['face_shibie'] = frame.copy()
+            outputFrame = frame.copy()
         # 显示结果图像
         # cv2.imshow('Video', frame)
 
@@ -201,17 +189,15 @@ def face_shibie(frameCount):
     # cv2.destroyAllWindows()
 
 
+
 # 摄像头
-# def camera(frameCount):
 def camera(frameCount):
-    # global vs, outputFrame, lock
-    global vs, actOutputFrame, lock
+    global vs, outputFrame, lock
     while True:
         # frame = vs.read()
         # outputFrame = frame.copy()
         # 0710 s
-        # outputFrame = vs.read()
-        actOutputFrame['zhi_bo'] = nowFrame
+        outputFrame = vs.read()
         # 0710 e
         # 显示结果图像
         # cv2.imshow('Video', frame)
@@ -224,13 +210,13 @@ def camera(frameCount):
     # cv2.destroyAllWindows()
 
 
-# save the date to the wav file
+#save the date to the wav file
 def save_wave_file(filename, data):
     # 二进制写入模式
     wf = wave.open(filename, 'wb')
     wf.setnchannels(CHANNELS)
     # 两个字节16位
-    wf.setsampwidth(SAMP_WIDTH)
+    wf.setsampwidth(sampwidth)
     # 帧速率
     wf.setframerate(RATE)
     # 把数据加进去，就会存到硬盘上去wf.writeframes(b"".join(data))
@@ -240,7 +226,7 @@ def save_wave_file(filename, data):
 
 # 录屏
 def luping(frameCount):
-    global vs, lock
+    global vs, outputFrame, lock
     fps = 20
     start = 3  # 延时录制
     end = 15  # 自动结束时间
@@ -258,18 +244,16 @@ def luping(frameCount):
         captureImage = ImageGrab.grab()  # 抓取屏幕
         frame = cv2.cvtColor(np.array(captureImage), cv2.COLOR_RGB2BGR)
         if imageNum > fps * start:
-            actOutputFrame['lu_ping'] = frame
+            outputFrame = frame
             # video.write(frame)
-            save_wave_file("D:\\WorkSpaces\\Pycharm_WorkSpace\\Python3\\com\\gsh\\tmp\\data\\test.mp4", frame)
+            save_wave_file("D:\\WorkSpaces\\Pycharm_WorkSpace\\Python3\\com\\gsh\\tmp\\data\\test.mp4",frame)
 
-
-###
-def generate(act):
+def generate():
     # grab global references to the output frame and lock variables
-    global actOutputFrame, lock
+    global outputFrame, lock
+
     # loop over frames from the output stream
     while True:
-        outputFrame = actOutputFrame[act]
         # wait until the lock is acquired
         # with lock:
         # check if the output frame is available, otherwise skip
@@ -289,106 +273,79 @@ def generate(act):
                bytearray(encodedImage) + b'\r\n')
 
 
-# S 音频相关
 def genHeader(sampleRate, bitsPerSample, channels):
-    datasize = 2000 * 10 ** 6
-    o = bytes("RIFF", 'ascii')  # (4byte) Marks file as RIFF
-    o += (datasize + 36).to_bytes(4, 'little')  # (4byte) File size in bytes excluding this and RIFF marker
-    o += bytes("WAVE", 'ascii')  # (4byte) File type
-    o += bytes("fmt ", 'ascii')  # (4byte) Format Chunk Marker
-    o += (16).to_bytes(4, 'little')  # (4byte) Length of above format data
-    o += (1).to_bytes(2, 'little')  # (2byte) Format type (1 - PCM)
-    o += (channels).to_bytes(2, 'little')  # (2byte)
-    o += (sampleRate).to_bytes(4, 'little')  # (4byte)
-    o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4, 'little')  # (4byte)
-    o += (channels * bitsPerSample // 8).to_bytes(2, 'little')  # (2byte)
-    o += (bitsPerSample).to_bytes(2, 'little')  # (2byte)
-    o += bytes("data", 'ascii')  # (4byte) Data Chunk Marker
-    o += (datasize).to_bytes(4, 'little')  # (4byte) Data size in bytes
+    datasize = 2000*10**6
+    o = bytes("RIFF",'ascii')                                               # (4byte) Marks file as RIFF
+    o += (datasize + 36).to_bytes(4,'little')                               # (4byte) File size in bytes excluding this and RIFF marker
+    o += bytes("WAVE",'ascii')                                              # (4byte) File type
+    o += bytes("fmt ",'ascii')                                              # (4byte) Format Chunk Marker
+    o += (16).to_bytes(4,'little')                                          # (4byte) Length of above format data
+    o += (1).to_bytes(2,'little')                                           # (2byte) Format type (1 - PCM)
+    o += (channels).to_bytes(2,'little')                                    # (2byte)
+    o += (sampleRate).to_bytes(4,'little')                                  # (4byte)
+    o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4,'little')  # (4byte)
+    o += (channels * bitsPerSample // 8).to_bytes(2,'little')               # (2byte)
+    o += (bitsPerSample).to_bytes(2,'little')                               # (2byte)
+    o += bytes("data",'ascii')                                              # (4byte) Data Chunk Marker
+    o += (datasize).to_bytes(4,'little')                                    # (4byte) Data size in bytes
     return o
 
-# 音频
+
 def audio():
-    # S 音频处理
-    RECORD_SECONDS = 5
-    CHUNK = 1024  # 定义数据流块
-    FORMAT = pyaudio.paInt16  # 量化位数（音量级划分）
-    CHANNELS = 2  # 声道数;声道数：可以是单声道或者是双声道
-    RATE = 44100  # 采样率;采样率：一秒内对声音信号的采集次数，常用的有8kHz, 16kHz, 32kHz, 48kHz, 11.025kHz, 22.05kHz, 44.1kHz
-    sampleRate = 44100
-    bitsPerSample = 16
-    # WAVE_OUTPUT_FILENAME = filepath  # wav文件路径
-    p = pyaudio.PyAudio()  # 实例化
-    stream = p.open(format=FORMAT,
-                    channels=CHANNELS,
-                    rate=RATE,
-                    input=True,
-                    frames_per_buffer=CHUNK)
-    wav_header = genHeader(sampleRate, bitsPerSample, CHANNELS)
-    # print("*"*10, "开始录音：请在5秒内输入语音")
-    # frames = []  # 定义一个列表
-    while True:
-        # for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):  # 循环，采样率11025 / 256 * 5
-        data = wav_header + stream.read(CHUNK)  # 读取chunk个字节 保存到data中
-        yield data
-    # E 音频处理
-# E 音频相关
-
-
-# 获取实时输入流帧
-def getNowFrame():
-    global nowFrame
-    while True:
-        nowFrame = vs.read()
-
+        # S 音频处理
+        RECORD_SECONDS = 5
+        CHUNK = 1024  # 定义数据流块
+        FORMAT = pyaudio.paInt16  # 量化位数（音量级划分）
+        CHANNELS = 2  # 声道数;声道数：可以是单声道或者是双声道
+        RATE = 44100  # 采样率;采样率：一秒内对声音信号的采集次数，常用的有8kHz, 16kHz, 32kHz, 48kHz, 11.025kHz, 22.05kHz, 44.1kHz
+        sampleRate = 44100
+        bitsPerSample = 16
+        # WAVE_OUTPUT_FILENAME = filepath  # wav文件路径
+        p = pyaudio.PyAudio()  # 实例化
+        stream = p.open(format=FORMAT,
+                        channels=CHANNELS,
+                        rate=RATE,
+                        input=True,
+                        frames_per_buffer=CHUNK)
+        wav_header = genHeader(sampleRate, bitsPerSample, CHANNELS)
+        # print("*"*10, "开始录音：请在5秒内输入语音")
+        # frames = []  # 定义一个列表
+        while True:
+            # for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):  # 循环，采样率11025 / 256 * 5
+            data = wav_header + stream.read(CHUNK)  # 读取chunk个字节 保存到data中
+            yield data
+        # E 音频处理
 
 @app.route("/zhi_bo")
-def zhi_bo_api():
+def zhi_bo():
     # return the response generated along with the specific media
     # type (mime type)
-    t = threading.Thread(target=camera, args=(["frame_count"],))
+    t = threading.Thread(target=camera, args=(
+        args["frame_count"],))
     t.daemon = True
     t.start()
-    return Response(generate('zhi_bo'), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(generate(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.route("/lu_ping")
-def lu_ping_api():
+def lu_ping():
     # return the response generated along with the specific media
     # type (mime type)
-    t = threading.Thread(target=luping, args=(["frame_count"],))
+    t = threading.Thread(target=luping, args=(
+        args["frame_count"],))
     t.daemon = True
     t.start()
-    return Response(generate('lu_ping'), mimetype="multipart/x-mixed-replace; boundary=frame")
-
-
-@app.route("/face_shibie")
-def face_shibie_api():
-    # return the response generated along with the specific media
-    # type (mime type)
-    t = threading.Thread(target=face_shibie, args=(["frame_count"],))
-    t.daemon = True
-    t.start()
-    return Response(generate('face_shibie'), mimetype="multipart/x-mixed-replace; boundary=frame")
-
-
-@app.route("/detect_motion")
-def detect_motion_api():
-    # return the response generated along with the specific media
-    # type (mime type)
-    t = threading.Thread(target=detect_motion, args=(["frame_count"],))
-    t.daemon = True
-    t.start()
-    return Response(generate('detect_motion'), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(generate(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.route("/audio_feed")
-def audio_feed_api():
+def audio_feed():
     # return Response(audio(), mimetype="audio/mpeg3")
     return Response(audio(), mimetype="audio/x-wav;codec=pcm")
 
 
-def main():
+# check to see if this is the main thread of execution
+if __name__ == '__main__':
     # construct the argument parser and parse command line arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-i", "--ip", type=str, required=True,
@@ -398,20 +355,17 @@ def main():
     ap.add_argument("-f", "--frame-count", type=int, default=32,
                     help="# of frames used to construct the background model")
     args = vars(ap.parse_args())
+
+    # start a thread that will perform motion detection
+    # t = threading.Thread(target=camera, args=(
+    t = threading.Thread(target=luping, args=(
+        args["frame_count"],))
+    t.daemon = True
+    # t.start()
+
     # start the flask app
     app.run(host=args["ip"], port=args["port"], debug=True,
             threaded=True, use_reloader=False)
-
-
-# check to see if this is the main thread of execution
-if __name__ == '__main__':
-    # start a thread that get now frame
-    t_main = threading.Thread(target=main())
-    t_sub_1 = threading.Thread(target=getNowFrame())
-    t_main.daemon = True
-    t_sub_1.daemon = True
-    t_main.start()
-    t_sub_1.start()
 
 # release the video stream pointer
 vs.stop()
