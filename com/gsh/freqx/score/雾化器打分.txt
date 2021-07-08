@@ -1,0 +1,167 @@
+function [score_unb,score_mis,score_rub]=score(option)
+A_1x=option.A1;  %径向1倍转频幅值
+A_2x=option.A2;  %径向2倍转频幅值
+A_3x=option.A3;  %径向3倍转频幅值
+A_4x=option.A4;  %径向4倍转频幅值
+A_2axial=option.A_a2;  %轴向2倍转频幅值
+A_rms=option.rms3000;  %轴向1500~3000的Rms
+A_25x=option.A25;  %径向2.5倍转频幅值
+A_15x=option.A15;  %径向1.5倍转频幅值
+A_812=option.A812; %轴向8~12倍转频幅值的均值
+
+%打分标准：80分阈值，适当往小处放，避免漏报；60分阈值，确定故障的，精准些，未确定故障的，适当放大；
+
+%%  score_unb  不平衡
+th1=30; %80 A_1x 径向1倍转频幅值 80分阈值
+th2=70; %60 A_1x 径向1倍转频幅值 60分阈值
+th4=30; %60 A_2x 径向2倍转频幅值 60分阈值
+
+X1=[th1,(th1+th2)*0.48,th2,2.8*th2,4*th2];  %设定拟合曲线，特征值
+Y1=[80,70,60,30,20];   %分数，最重要的节点为60分、80分的
+[fitresult, ~] = createFit1(X1, Y1);  %拟合
+
+a=fitresult.a;   %拟合参数
+b=fitresult.b;   %拟合参数
+c=fitresult.c;   %拟合参数
+if A_1x < th1    %高于80分阈值，默认为80分以上
+    score_unb = 80 + ((th1-A_1x)/th1)*20;
+else
+    if (A_2x < th4) && (A_3x < 0.8*th4) && (A_4x < 0.6*th4)  %没有其他低频故障对转频幅值的影响
+        score_unb = a*A_1x^b + c;
+    else
+        score_unb = a*(0.9*A_1x)^b + c;
+    end
+end
+
+if score_unb>98   %最大98
+    score_unb=98;
+elseif score_unb<10 %最低10
+    score_unb=10;
+end
+
+%% mis_score   不对中
+th3=8; %径向2倍转频幅值  80分阈值
+
+th33=6; %径向3倍转频幅值 80分阈值
+th34=18; %径向3倍转频幅值 60分阈值
+
+th5=5; %轴向2倍转频幅值 80分阈值
+th6=15; %轴向2倍转频幅值 60分阈值
+
+X2_radial=[th3,(th3+th4)*0.48,th4,2.5*th4,5*th4];
+Y2_radial=[80,70,60,40,20];
+
+X3_radial=[th33,(th33+th34)*0.48,th34,2.5*th34,5*th34];
+Y3_radial=[80,70,60,40,20];
+
+X2_axial=[th5,(th5+th6)*0.48,th6,2.5*th6,5*th6];
+Y2_axial=[80,70,60,40,20];
+
+[fitresult_2r, ~] = createFit1(X2_radial, Y2_radial);
+[fitresult_3r, ~] = createFit1(X3_radial, Y3_radial);
+[fitresult_2a, ~] = createFit1(X2_axial, Y2_axial);
+
+a_2r=fitresult_2r.a;
+b_2r=fitresult_2r.b;
+c_2r=fitresult_2r.c;
+
+a_3r=fitresult_3r.a;
+b_3r=fitresult_3r.b;
+c_3r=fitresult_3r.c;
+
+a_2a=fitresult_2a.a;
+b_2a=fitresult_2a.b;
+c_2a=fitresult_2a.c;
+
+if A_2x < th3   %正常
+    score_mis = 80 + ((th3-A_2x)/th3)*20;
+else 
+    if (A_2x > A_1x) && (A_2axial>th5)    %并发不对中
+        score_mis = 0.6*(a_2r*A_2x^b_2r+c_2r) + 0.3*(a_2a*A_2axial^b_2r+c_2a)+...
+            0.1*(a_3r*A_3x^b_3r+c_3r);
+        
+    elseif (A_2x > A_1x) || ((A_2axial>0.2*A_2x)&&(A_2axial<0.6*A_2x))   %平行不对中
+        score_mis = 0.8*(a_2r*A_2x^b_2r+c_2r) +0.2*(a_2a*A_2axial^b_2a+c_2a);
+    
+    elseif A_2axial > th6 || A_2axial > 0.6*A_2x     %角不对中
+        score_mis = 0.5*(a_2r*A_2x^b_2r+c_2r) + 0.2*(a_3r*A_3x^b_3r+c_3r)+...
+            0.3*(a_2a*A_2axial^b_2a+c_2a);
+    else
+        score_mis = a_2r*A_2x^b_2r+c_2r;
+    end
+end
+
+if score_mis>98
+    score_mis=98;
+elseif score_mis<10
+    score_mis=10;
+end
+
+        
+%% Rub_score  碰磨
+th7=6; %轴向RMS3000  80分阈值
+th8=38; %轴向RMS3000  80分阈值
+
+th9=2; %径向1.5倍转频幅值 80分阈值
+th10=6; %径向1.5倍转频幅值 60分阈值
+
+th11=2; %径向2.5倍转频幅值 80分阈值
+th12=6; %径向2.5倍转频幅值 60分阈值
+
+th13=4;  %轴向8~12倍转频幅值均值 80分阈值
+th14=20; %轴向8~12倍转频幅值均值 60分阈值
+
+X3_rms=[th7,(th7+th8)*0.48,th8,2.5*th8,5*th8];
+Y3_rms=[80,70,60,40,20];
+
+X3_15=[th9,(th9+th10)*0.48,th10,2.5*th10,5*th10];
+Y3_15=[80,70,60,40,20];
+
+X3_25=[th11,(th11+th12)*0.48,th12,2.5*th12,5*th12];
+Y3_25=[80,70,60,40,20];
+
+X3_812=[th13,(th13+th14)*0.48,th14,2.5*th14,5*th14];
+Y3_812=[80,70,60,40,20];
+
+[fitresult_3rms, ~] = createFit1(X3_rms, Y3_rms);
+[fitresult_315, ~] = createFit1(X3_15, Y3_15);
+[fitresult_325, ~] = createFit1(X3_25, Y3_25);
+[fitresult_3812, ~] = createFit1(X3_812, Y3_812);
+
+a_3rms=fitresult_3rms.a;
+b_3rms=fitresult_3rms.b;
+c_3rms=fitresult_3rms.c;
+
+a_315=fitresult_315.a;
+b_315=fitresult_315.b;
+c_315=fitresult_315.c;
+
+a_325=fitresult_325.a;
+b_325=fitresult_325.b;
+c_325=fitresult_325.c;
+
+a_3812=fitresult_3812.a;
+b_3812=fitresult_3812.b;
+c_3812=fitresult_3812.c;
+
+if A_rms < th7   %正常
+    score_rub = 80 + ((th7-A_rms)/th7)*20;
+else
+    if A_15x > th9    %1.5倍转频幅值超限
+        score_rub = 0.1*(a*A_1x^b + c) + 0.7*(a_3rms*A_rms^b_3rms + c_3rms) + ...
+        0.2*(a_315*A_15x^b_315 + c_315);
+    elseif A_25x > th11    %2.5倍转频幅值超限
+        score_rub = 0.1*(a*A_1x^b + c) +  0.7*(a_3rms*A_rms^b_3rms + c_3rms) + ...
+        0.2*(a_325*A_25x^b_325 + c_325);
+    else    %选择分数最低的
+        score_rub1 = 0.1*(a*A_1x^b + c) + 0.9*(a_3812*A_812^b_3812 + c_3812) ;
+        score_rub2 = 0.1*(a*A_1x^b + c) + 0.9*(a_3rms*A_rms^b_3rms + c_3rms);
+        score_rub = min([score_rub1 score_rub2]);
+    end
+end
+
+if score_rub>98
+    score_rub=98;
+elseif score_rub<10
+    score_rub=10;
+end        
