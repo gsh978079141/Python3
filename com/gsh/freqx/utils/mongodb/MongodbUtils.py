@@ -1,9 +1,9 @@
 import pymongo
 
 # 连接数据库
-def connect_mongodb(host, port, username, password, use_db):
+def get_client(host, port, username, password, use_db=None):
     client = pymongo.MongoClient('mongodb://{}:{}@{}:{}'.format(username, password, host, port))
-    return client[use_db]
+    return client if use_db is None else client[use_db]
 
 
 if __name__ == '__main__':
@@ -12,7 +12,7 @@ if __name__ == '__main__':
     mongodb_username = 'gsh'
     mongodb_password = 'gsh'
     mongodb_use_db = 'gsh-test'
-    db = connect_mongodb(mongodb_host, mongodb_port, mongodb_username, mongodb_password, mongodb_use_db)
+    db = get_client(mongodb_host, mongodb_port, mongodb_username, mongodb_password, mongodb_use_db)
 
     # 用户信息
     user_info = {
